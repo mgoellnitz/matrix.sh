@@ -54,7 +54,13 @@ help() {
 }
 
 _curl() {
-	curl -s -H "$AUTHORIZATION" -H "User-Agent: matrix.sh/$VERSION" "$@"
+	HEADERFILE="$HOME/.matrix.sh-headers"
+	if [ -z "$(grep "$AUTHORIZATION" $HEADERFILE)" ] ; then
+		echo "User-Agent: matrix.sh/$VERSION" > $HEADERFILE
+		chmod 600 $HEADERFILE
+		echo "$AUTHORIZATION" > $HEADERFILE
+	fi
+	curl -s --header @$HEADERFILE "$@"
 }
 
 die() {
